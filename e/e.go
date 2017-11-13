@@ -1,4 +1,4 @@
-package xpect
+package e
 
 import (
 	"bufio"
@@ -11,32 +11,32 @@ import (
 	"testing"
 )
 
-func Xpect(t *testing.T, actual interface{}) *Xpectation {
-	return &Xpectation{
-		actual: actual,
-		t:      t,
+func Xpec(t *testing.T, value interface{}) *Subject {
+	return &Subject{
+		value: value,
+		t:     t,
 	}
 }
 
-type Xpectation struct {
-	t      *testing.T
-	actual interface{}
+type Subject struct {
+	t     *testing.T
+	value interface{}
 }
 
-func (e *Xpectation) ToBe(expected interface{}) {
+func (s *Subject) ToBe(expected interface{}) {
 	// go1.9: e.t.Helper()
-	if e.actual != expected {
+	if s.value != expected {
 		var msg string
-		if reflect.TypeOf(e.actual) == reflect.TypeOf(expected) {
-			msg = fmt.Sprintf("%#v is not %#v", e.actual, expected)
+		if reflect.TypeOf(s.value) == reflect.TypeOf(expected) {
+			msg = fmt.Sprintf("but %#v is not %#v", s.value, expected)
 		} else {
-			msg = fmt.Sprintf("%#v (%T) is not (%T) %#v", e.actual, e.actual, expected, expected)
+			msg = fmt.Sprintf("but (%T) %#v is not (%T) %#v", s.value, s.value, expected, expected)
 		}
-		e.failNow(msg)
+		s.failNow(msg)
 	}
 }
 
-func (e *Xpectation) failNow(msg string) {
+func (s *Subject) failNow(msg string) {
 	// go1.9: e.t.Helper()
 	var lineText string
 	_, file, line, ok := runtime.Caller(2)
@@ -54,8 +54,8 @@ func (e *Xpectation) failNow(msg string) {
 		line = 1
 	}
 
-	e.t.Logf("%s:%d\n%s\n%s", file, line, lineText, msg)
-	e.t.FailNow()
+	s.t.Logf("%s:%d\n%s\n%s", file, line, lineText, msg)
+	s.t.FailNow()
 }
 
 func readLine(fileName string, lineNum int) (lineText string, lastLine int, err error) {

@@ -5,10 +5,10 @@ package main
 import (
 	"testing"
 
-	. "github.com/marioizquierdo/xpectify/xpec"
+	. "github.com/marioizquierdo/xpec/e"
 )
 
 func Test_FailingStuff(t *testing.T) {
 	princess := "Toad"
-	Xpect(princess).ToBe("Peach")
+	Xpec(t, princess).ToBe("Peach")
 }

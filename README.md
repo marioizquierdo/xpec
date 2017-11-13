@@ -1,19 +1,19 @@
-# Xpectify
+# Xpec
 
-Expectation helpers for Go tests. Similar to testify assertions, but provides error messages that can be easier to read without the need to include assertion messages:
+Expectation helpers for Go tests. Similar to testify assertions, but provides error messages that include context information without the need to add assertion messages:
 
 ```go
 func Test_AnotherCastle(t *testing.T) {
 	princess := "Toad"
-	Xpect(t, princess).ToBe("Peach")
+	Xpec(t, princess).ToBe("Peach")
 }
 ```
 
 running `go test` on this file will output:
 ```sh
 --- FAIL: Test_AnotherCastle (0.00s)
-	comparison_test:11
-		Xpect(t, princess).ToBe("Peach")
+	another_castle_test.go:13
+		Xpec(t, princess).ToBe("Peach")
 		but "Toad" is not "Peach"
 ```
 
