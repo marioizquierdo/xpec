@@ -5,27 +5,34 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 )
 
-func Xpect(t *testing.T, value interface{}) *Xpectation {
+func Xpect(t *testing.T, actual interface{}) *Xpectation {
 	return &Xpectation{
-		value: value,
-		t:     t,
+		actual: actual,
+		t:      t,
 	}
 }
 
 type Xpectation struct {
-	t     *testing.T
-	value interface{}
+	t      *testing.T
+	actual interface{}
 }
 
 func (e *Xpectation) ToBe(expected interface{}) {
 	// go1.9: e.t.Helper()
-	if e.value != expected {
-		e.failNow(fmt.Sprintf("expected %#v, found %#v", e.value, expected))
+	if e.actual != expected {
+		var msg string
+		if reflect.TypeOf(e.actual) == reflect.TypeOf(expected) {
+			msg = fmt.Sprintf("%#v is not %#v", e.actual, expected)
+		} else {
+			msg = fmt.Sprintf("%#v (%T) is not (%T) %#v", e.actual, e.actual, expected, expected)
+		}
+		e.failNow(msg)
 	}
 }
 
@@ -47,11 +54,11 @@ func (e *Xpectation) failNow(msg string) {
 		line = 1
 	}
 
-	e.t.Logf("%s:%d\n%s\n\t%s", file, line, lineText, msg)
+	e.t.Logf("%s:%d\n%s\n%s", file, line, lineText, msg)
 	e.t.FailNow()
 }
 
-func readLine(fileName string, lineNum int) (line string, lastLine int, err error) {
+func readLine(fileName string, lineNum int) (lineText string, lastLine int, err error) {
 	r, err := os.Open(fileName)
 	if err != nil {
 		return "", 0, err
@@ -61,9 +68,9 @@ func readLine(fileName string, lineNum int) (line string, lastLine int, err erro
 	for sc.Scan() {
 		lastLine++
 		if lastLine == lineNum {
-			// you can return sc.Bytes() if you need output in []bytes
-			return sc.Text(), lastLine, sc.Err()
+			lineText = strings.Trim(sc.Text(), " \t") // trim spaces and tabs
+			return lineText, lastLine, sc.Err()
 		}
 	}
-	return line, lastLine, io.EOF
+	return "", lastLine, io.EOF
 }

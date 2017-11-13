@@ -1,15 +1,14 @@
+// For now, this file is just a playground to try error messages and examples
+// during development. It will eventually be removed.
 package main
 
 import (
 	"testing"
 
-	. "code.justin.tv/edge/xpectify/xpect"
+	. "github.com/marioizquierdo/xpectify/xpec"
 )
 
-func Test_Movidas(t *testing.T) {
-	v := 1
-	Xpect(t, v).ToBe(2)
-
-	s := "foo"
-	Xpect(t, s).ToBe("bar")
+func Test_FailingStuff(t *testing.T) {
+	princess := "Toad"
+	Xpect(princess).ToBe("Peach")
 }
